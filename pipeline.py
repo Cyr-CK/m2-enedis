@@ -1,4 +1,4 @@
-def Pipeline(new_data):
+def Pipeline_classification(new_data):
     import pickle as pk
     import pandas as pd
     import os
@@ -31,3 +31,10 @@ def Pipeline(new_data):
 
     pred = model.predict(new_data)
     print(pred)
+
+
+def Pipeline_regression(new_data):
+    import pickle as pk
+    import pandas as pd
+    import os
+    

@@ -3,15 +3,23 @@ from streamlit_option_menu import option_menu
 import matplotlib.pyplot as plt
 import plotly.express as px
 
+
+# Page setting
+st.set_page_config(layout="wide", page_title="")
+
+# with open('styles.css') as f:
+#     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+
 import warnings
 warnings.filterwarnings("ignore")
 
 # 1. as sidebar menu
-with st.sidebar:
+""" with st.sidebar:
     page = option_menu("Menu", ["Contexte du projet", "Dashboard","Cartographie interactive","Prédictions"], 
         icons=['book', 'bar-chart-fill','geo-alt','calculator'], 
           menu_icon="house", 
-            default_index=1)
+            default_index=1) """
 
 
 ### Contenu de chaque page ### -----------------------------------
@@ -23,34 +31,22 @@ if page == "Contexte du projet":
 
 
 
-
-
 # Page de data visualisation
 elif page == "Dashboard":
     st.header("Dashboard interactif")
-    st.write("xxxxx")
-    
-    # Données pour le graphique
-    labels = ['Catégorie A', 'Catégorie B', 'Catégorie C', 'Catégorie D']
-    sizes = [25, 35, 20, 20]
-
-    # Créer le graphique pie chart avec Plotly
-    fig = px.pie(values=sizes, names=labels, title='Répartition des catégories')
-
-    # Afficher le graphique dans Streamlit
-    st.plotly_chart(fig)
-    
-
+    # visualisation_page()
+        
 
 
 # Page cartographie
 elif page == "Cartographie interactive":
     st.header("Carte")
-    st.write("xxxx")
+    # cartographie_page()
 
 
 
 # Page de prédiction
 elif page == "Prédictions":
-    st.header("Prédictions de l'étiquette DPE et de la consommation d'énergie")
-    st.write("xxxx")
+    st.header("Prédiction")
+    # prediction_page()
+    

@@ -14,17 +14,14 @@ st.set_page_config(layout="wide", page_title="Prédiction de la consommation én
 #     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 
-
-
-
-#############################################
-### Préparation data pour dashboard #########
-#############################################
+################################################################################
+#################### Préparation data pour dashboard ###########################
+################################################################################
 
 #chargement des données
-chemin_dossier = r'C:\Users\habib\Desktop\Master_SISE\Projets\python_enedis'
-fichier = 'data_classification.csv'
-df = pd.read_csv(os.path.join(chemin_dossier, fichier),sep=";")
+os.chdir("C:/Users/habib/Desktop/Master_SISE/Projets/python_enedis")
+nom_fichier = "data_classification.csv"
+df = pd.read_csv(nom_fichier,sep=";")
 
 # Utilisation du code postal pour créer une colonne 'Département'
 departements_bretagne = {
@@ -33,22 +30,30 @@ departements_bretagne = {
     35: "Ille-et-Vilaine",
     56: "Morbihan"
 }
+df['Département'] = df['Code_postal_(brut)'].astype(str).str[:2].astype(int)
+df['Département'] = df['Département'].replace(departements_bretagne)
 
-
+# Nettoyage des codes postaux incohérents (hors Bretagne)
+departements_a_garder = ["Côtes-d'Armor", "Finistère", "Ille-et-Vilaine", "Morbihan"]
+df = df[df['Département'].isin(departements_a_garder)]
 
 # Filtre sur la surface totale logement (pour retirer les outflyers)
 df = df[df['Surface_habitable_logement'] <= 7000]
+
 # Filtre sur l'année de construction (valeurs incohérentes)
 df = df[df['Année_construction'] <= 2024]
+
 # Ligne incohérente retirée
 df = df[~((df['Coût_total_5_usages'] > 100000) & (df['Type_bâtiment'] == 'maison'))]
 
-df['Département'] = df['Code_postal_(brut)'].astype(str).str[:2].astype(int)
-df['Département'] = df['Département'].replace(departements_bretagne)
 # Création d'une variable 'Cout/m²'
 df['Coût/m²']=df['Coût_total_5_usages']/df['Surface_habitable_logement']
 
 
+
+####################################################################################
+########### Menu latéral (navigation entre les pages) ##############################
+####################################################################################
 
 # sidebar menu
 with st.sidebar:
@@ -57,11 +62,9 @@ with st.sidebar:
           menu_icon="house", 
             default_index=1)
 
-##############################
-### Contenu de chaque page ### 
-##############################
-
-
+#####################################################################################
+#########################"# Contenu de chaque page ################################## 
+#####################################################################################
 
 
 # Page de contexte ===================================================================================================
@@ -94,7 +97,17 @@ elif page == "Tableau de bord":
     # Disposition des graphiques sur la page : on choisit 2 colonnes
     colonnes_dashboard = st.columns([1,1])
   
-
+    # Définir une palette de couleurs personnalisée pour les étiquettes DPE
+    couleurs_DPE = {
+    "A": "#5A8C5B",
+    "B": "#0AAE00",
+    "C": "#C8D900",
+    "D": "#FFEF51",
+    "E": "#FFC54D",
+    "F": "#FF7A01",
+    "G": "#FF0028"
+    }
+    
     # Graphique n°1 - barres empilées ---------------------------------------------------------------------------------------------------------
 
     # Compter les occurrences de chaque combinaison de 'Département' et 'Etiquette_DPE'
@@ -111,19 +124,7 @@ elif page == "Tableau de bord":
     # Vérifier que la sélection n'est pas vide pour éviter les erreurs
     if selected_departements:
         # Filtrer les données en fonction des départements sélectionnés
-        filtered_df_pivot = df_pivot.loc[selected_departements]
-
-        # Définir une palette de couleurs personnalisée pour les étiquettes DPE
-        couleurs_DPE = {
-        "A": "#5A8C5B",
-        "B": "#0AAE00",
-        "C": "#C8D900",
-        "D": "#FFEF51",
-        "E": "#FFC54D",
-        "F": "#FF7A01",
-        "G": "#FF0028"
-        }
-       
+        filtered_df_pivot = df_pivot.loc[selected_departements]      
 
         # Créer le graphique à barres empilées avec Plotly
         fig_1 = px.bar(
@@ -184,6 +185,54 @@ elif page == "Tableau de bord":
 
     # Graphique n°3 --------------------------------------------------------------------------------------------
     
+    with colonnes_dashboard[1]:   
+        # Widget de sélection multiple pour la classe DPE
+        etiquette_dpe_3 = st.multiselect(
+        "Sélectionnez les classes DPE",
+        options=["A", "B", "C", "D", "E", "F", "G"],
+        default=["A", "B", "C", "D", "E", "F", "G"],
+        label_visibility="hidden"
+        )
+
+        # Filtrer les données en fonction de la sélection
+        df_filtre_3 = df[df['Etiquette_DPE'].isin(etiquette_dpe_3)]
+
+        # Calculer le coût moyen par année de construction pour la classe sélectionnée
+        df_agg_3 = df_filtre_3.groupby(['Année_construction', 'Etiquette_DPE']).agg({'Coût/m²': 'mean'}).reset_index()
+
+        # Créer un histogramme avec Plotly Express
+        fig_3 = px.line(
+            df_agg_3, 
+            x="Année_construction", 
+            y="Coût/m²",
+            color='Etiquette_DPE',
+            range_x=[1900,2024], 
+            title=f"Dépenses énergétiques par mêtre² (en €) en fonction de l'année de construction",
+            labels={"Année_construction": "Année de Construction", "Coût/m²": "Coût/m²"},
+            )
+
+        # Appliquer les couleurs personnalisées des classes DPE sélectionnées
+        for trace in fig_3.data:
+            # Appliquer la couleur à chaque trace (ligne) basée sur l'étiquette DPE
+            trace.line.color = couleurs_DPE[trace.name]
+
+        # Trier les légendes (étiquettes) par ordre alphabétique
+        fig_3.update_layout(
+            legend=dict(
+                traceorder="reversed",  # Utilisation de l'ordre d'origine des classes DPE
+                itemsizing="constant",  # Garder la taille des éléments constante
+                itemclick="toggleothers",  # Permet de désélectionner une légende sans affecter les autres
+                orientation="v",  # Disposition verticale
+                title="Etiquette DPE",  # Titre de la légende
+                x=1,  # Positionnement de la légende sur l'axe x
+                y=1,  # Positionnement de la légende sur l'axe y
+                xanchor="left",  # Ancrage horizontal de la légende
+                yanchor="top",  # Ancrage vertical de la légende
+            )
+        )
+
+        # Afficher le graphique dans la deuxième colonne
+        st.plotly_chart(fig_3)  
 
 
 

@@ -9,3 +9,5 @@ plotly
 streamlit-option-menu
 streamlit-card
 statsmodels
+folium
+markdown

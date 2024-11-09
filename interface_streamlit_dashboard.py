@@ -23,9 +23,8 @@ st.set_page_config(layout="wide", page_title="Prédiction de la consommation én
 #############################################
 
 #chargement des données
-chemin_dossier = r'C:\Users\habib\Desktop\Master_SISE\Projets\python_enedis'
-fichier = 'data_classification.csv'
-df = pd.read_csv(os.path.join(chemin_dossier, fichier),sep=";")
+file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "processed", "full_data_bretagne.csv")
+df = pd.read_csv(file_path, sep=";")
 
 # Utilisation du code postal pour créer une colonne 'Département'
 departements_bretagne = {

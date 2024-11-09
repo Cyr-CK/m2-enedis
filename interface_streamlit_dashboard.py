@@ -26,15 +26,6 @@ st.set_page_config(layout="wide", page_title="Prédiction de la consommation én
 file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "processed", "full_data_bretagne.csv")
 df = pd.read_csv(file_path, sep=";")
 
-# Utilisation du code postal pour créer une colonne 'Département'
-departements_bretagne = {
-    22: "Côtes-d'Armor",
-    29: "Finistère",
-    35: "Ille-et-Vilaine",
-    56: "Morbihan"
-}
-
-
 
 # Filtre sur la surface totale logement (pour retirer les outflyers)
 df = df[df['Surface_habitable_logement'] <= 7000]
@@ -42,7 +33,13 @@ df = df[df['Surface_habitable_logement'] <= 7000]
 df = df[df['Année_construction'] <= 2024]
 # Ligne incohérente retirée
 df = df[~((df['Coût_total_5_usages'] > 100000) & (df['Type_bâtiment'] == 'maison'))]
-
+# Utilisation du code postal pour créer une colonne 'Département'
+departements_bretagne = {
+    22: "Côtes-d'Armor",
+    29: "Finistère",
+    35: "Ille-et-Vilaine",
+    56: "Morbihan"
+}
 df['Département'] = df['Code_postal_(brut)'].astype(str).str[:2].astype(int)
 df['Département'] = df['Département'].replace(departements_bretagne)
 # Création d'une variable 'Cout/m²'

@@ -33,14 +33,23 @@ for i, type_batiment in enumerate(type_batiment_options):
 dpe_options = df['Etiquette_DPE'].unique()  # Valeurs uniques de l'étiquette DPE
 selected_dpe = st.multiselect("Sélectionner les étiquettes DPE", dpe_options, default=dpe_options)
 
+# Filtre par étiquette DPE (multiselect)
+ges_options = df['Etiquette_GES'].unique()  # Valeurs uniques de l'étiquette GES
+selected_ges = st.multiselect("Sélectionner les étiquettes DPE", ges_options, default=ges_options)
+
 
 # Filtre par surface habitable (slider)
 min_surface = int(df['Surface_habitable_logement'].min())
 max_surface = int(df['Surface_habitable_logement'].max())
 surface_habitable = st.slider("Surface habitable minimum (en m²)", min_value=min_surface, max_value=max_surface, value=(min_surface, max_surface))
 
+# Filtre par Hauteur sous plafond  (slider)
+min_hauteur = int(df['Hauteur_sous-plafond'].min())
+max_hauteur = 2022
+hauteur_sous_plafond = st.slider("Hauteur sous plafond (en m²)", min_value=min_hauteur, max_value=max_hauteur, value=(min_hauteur, max_hauteur))
+
 # Tri par consommation d'énergie (checkbox)
-sort_energy_consumption = st.checkbox("Trier par consommation d'énergie (coût total pour 5 usages)")
+sort_energy_consumption = st.checkbox("Trier par le coût d'énergie (coût total pour 5 usages)")
 
 # Appliquer les filtres
 df_filtered = df.copy()
@@ -52,9 +61,15 @@ if selected_types:
 # Filtrer par étiquette DPE
 df_filtered = df_filtered[df_filtered['Etiquette_DPE'].isin(selected_dpe)]
 
+# Filtrer par étiquette GES
+df_filtered = df_filtered[df_filtered['Etiquette_GES'].isin(selected_ges)]
 
 # Filtrer par surface habitable
 df_filtered = df_filtered[(df_filtered['Surface_habitable_logement'] >= surface_habitable[0]) & (df_filtered['Surface_habitable_logement'] <= surface_habitable[1])]
+
+# Filtrer par hateur sous plafond
+df_filtered = df_filtered[(df_filtered['Hauteur_sous-plafond'] >= hauteur_sous_plafond[0]) & (df_filtered['Hauteur_sous-plafond'] <= hauteur_sous_plafond[1])]
+
 
 # Tri par consommation d'énergie
 if sort_energy_consumption:

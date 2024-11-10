@@ -3,8 +3,8 @@ import pipeline
 import pickle as pk
 import pandas as pd
 
-Etiquette_GES = st.selectbox('Etiquette_GES', ["A", "B","C","D", "E", "F", "G"])
-Logement = st.selectbox('Logement', ["ancien", "nouveau"])
+Etiquette_DPE = st.selectbox('Etiquette_DPE', ["A", "B","C","D", "E", "F", "G"])
+Logement = st.selectbox('Logement', ["ancien", "neuf"])
 Type_bâtiment = st.selectbox('Type_bâtiment', ['appartement', 'maison', 'immeuble'])
 Année_construction = st.text_input('Année_construction')
 Code_postal = st.text_input('Code_postal_(brut)')
@@ -17,7 +17,7 @@ Surface_habitable_logement = st.text_input('Surface_habitable_logement')
 
 
 data = {
-"Etiquette_GES": Etiquette_GES,
+"Etiquette_DPE": Etiquette_DPE,
 "Logement": Logement,
 "Type_bâtiment": Type_bâtiment,
 "Année_construction": pd.to_numeric(Année_construction, errors='coerce'),
@@ -31,8 +31,26 @@ data = {
 
 # Convert data to DataFrame
 df = pd.DataFrame([data])
+
+st.markdown("""
+    <style>
+    .stButton > button {
+        background-color: #4CAF50;  /* Background color */
+        color: white;               /* Text color */
+        border-radius: 10px;        /* Rounded corners */
+        padding: 8px;              /* Padding */
+        font-size: 16px;            /* Font size */
+        font-weight: bold;          /* Bold text */
+    }
+    .stButton > button:hover {
+        background-color: #45a049; /* Hover color */
+        color: white;               /* Hover text color */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 if st.button("get result"):  
-    result = pipeline.Pipeline_classification(df)
+    result = pipeline.Pipeline_regression(df)
     st.success(result)
 
 

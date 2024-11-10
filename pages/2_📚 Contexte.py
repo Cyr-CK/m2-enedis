@@ -5,7 +5,7 @@ import pandas as pd
 st.title("Affichage des Données")
 
 # Charger les données
-data_path = "data/processed/full_data_bretagne.csv"
+data_path = "data/processed/data_classification.csv"
 @st.cache_data
 def load_data(path):
     return pd.read_csv(path, sep=";")
@@ -48,8 +48,6 @@ min_hauteur = int(df['Hauteur_sous-plafond'].min())
 max_hauteur = 2022
 hauteur_sous_plafond = st.slider("Hauteur sous plafond (en m²)", min_value=min_hauteur, max_value=max_hauteur, value=(min_hauteur, max_hauteur))
 
-# Tri par consommation d'énergie (checkbox)
-sort_energy_consumption = st.checkbox("Trier par le coût d'énergie (coût total pour 5 usages)")
 
 # Appliquer les filtres
 df_filtered = df.copy()
@@ -71,12 +69,26 @@ df_filtered = df_filtered[(df_filtered['Surface_habitable_logement'] >= surface_
 df_filtered = df_filtered[(df_filtered['Hauteur_sous-plafond'] >= hauteur_sous_plafond[0]) & (df_filtered['Hauteur_sous-plafond'] <= hauteur_sous_plafond[1])]
 
 
-# Tri par consommation d'énergie
-if sort_energy_consumption:
-    df_filtered = df_filtered.sort_values(by='Coût_total_5_usages', ascending=False)
-
 # Affichage des résultats filtrés
 st.write("Données filtrées", df_filtered)
+
+
+st.markdown("""
+    <style>
+    .stDownloadButton > button {
+        background-color: #4CAF50; /* Change background color */
+        color: white;               /* Change text color */
+        padding: 10px;              /* Add padding */
+        border-radius: 8px;         /* Add rounded corners */
+        font-weight: bold;          /* Bold text */
+        font-size: 16px;            /* Increase font size */
+    }
+    .stDownloadButton > button:hover {
+        background-color: #45a049; /* Hover color */
+        color: white;               /* Hover text color */
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Ajouter un bouton pour exporter les données filtrées en CSV
 csv = df_filtered.to_csv(index=False).encode('utf-8')

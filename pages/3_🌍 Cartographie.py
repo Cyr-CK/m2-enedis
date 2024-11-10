@@ -1,28 +1,30 @@
-# ********** affichage complet mais lent 40 secondes *************
-
-# import streamlit as st
+import streamlit as st
+import pandas as pd
+import folium
+from folium.plugins import FastMarkerCluster
 
 # # Path to the saved map.html file
-# map_path = "C:/Users/yacin/Desktop/projet_python/map.html"
+# map_path = "objects/map.html"
 
 # # Cache the HTML map file loading function
-# @st.cache_resource
+# @st.cache_data
 # def load_map(path):
 #     with open(path, "r") as file:
 #         return file.read()
 
-# # Load the cached HTML map content
-# html_map = load_map(map_path)
+# # Affiche un message de chargement
+# st.write("Chargement de la carte... ça prend une minute")
 
-# # Display the HTML map
+# # Une fois que la progression est à 100%, charge la carte
+# html_map = load_map(map_path)
+# zoom_start = 10
+
+# # Affiche la carte
 # st.components.v1.html(html_map, height=600)
 
-import streamlit as st
-import pandas as pd
-import folium
-from folium.plugins import MarkerCluster
 
-# Path to the data
+# *********** to show only a sample data on the map *************
+
 data_path = "data/processed/data_map.csv"
 
 # Load the dataframe
@@ -40,27 +42,22 @@ def create_map(df_sample):
     # Create the map centered on Rennes
     carte_bretagne = folium.Map(location=[rennes_lat, rennes_lon], zoom_start=8)
 
-    # Initialize the MarkerCluster object
-    marker_cluster = MarkerCluster().add_to(carte_bretagne)
+    marker_data = [
+        [row['lat'], row['lon'], f"Type de bâtiment: {row['Type_bâtiment']}<br>Surface habitable: {row['Surface_habitable_logement']} m²<br>Étiquette DPE : {row['Etiquette_DPE']}"]
+        for _, row in df_sample.iterrows()
+    ]
 
-    # Add markers for each property in the sample
-    for idx, row in df_sample.iterrows():
-        if pd.notna(row['lat']) and pd.notna(row['lon']):
-            popup = f"Type de bâtiment: {row['Type_bâtiment']}<br>Surface habitable: {row['Surface_habitable_logement']} m²<br>Étiquette DPE : {row['Etiquette_DPE']}"
-            
-            # Create a marker for each property and add it to the marker cluster
-            folium.Marker(
-                location=[row['lat'], row['lon']],
-                popup=popup
-            ).add_to(marker_cluster)
+    # Add FastMarkerCluster for better performance
+    FastMarkerCluster(marker_data).add_to(carte_bretagne)
 
     return carte_bretagne
 
+
 # Streamlit interface
-st.title("Carte Interactive avec Échantillon de Données")
+st.title("Carte Interactive avec échantillon de Données")
 
 # Generate a random sample of the data (e.g., 100 points)
-df_sample = generate_sample(df, num_points=500)
+df_sample = generate_sample(df, num_points=5000)
 
 # Create the map with the sample data
 carte_bretagne = create_map(df_sample)

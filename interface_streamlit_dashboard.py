@@ -57,7 +57,7 @@ df['Coût/m²']=df['Coût_total_5_usages']/df['Surface_habitable_logement']
 
 # sidebar menu
 with st.sidebar:
-    page = option_menu("Menu", ["[contexte du projet]", "Tableau de bord","Cartographie interactive","[prédictions]"], 
+    page = option_menu("Menu", ["Contexte", "Tableau de bord","Cartographie interactive","[prédictions]"], 
         icons=['book', 'bar-chart-fill','geo-alt','calculator'], 
           menu_icon="house", 
             default_index=1)
@@ -68,10 +68,37 @@ with st.sidebar:
 
 
 # Page de contexte ===================================================================================================
-if page == "[contexte du projet]":
+if page == "Contexte":
     st.header("Contexte du projet")
-    st.write("En France, la maîtrise de la consommation énergétique est devenue un enjeu majeur, tant pour les ménages que pour les fournisseurs d’énergie. Dans un contexte de hausse des coûts et de transition écologique, vos clients cherchent à mieux comprendre et optimiser leurs usages pour réduire leur facture et leur impact environnemental. Greentech vous propose une solution web innovante pour répondre à ces attentes.Notre interface comprend un dashboard interactif qui permet à vos clients de visualiser en temps réel leur consommation énergétique, de l’analyser, et d’identifier les pistes d’économies. En complément, notre outil de prédiction basé sur des algorithmes avancés utilise les données historiques pour anticiper les pics de consommation et proposer des recommandations personnalisées. Grâce à Greentech, offrez à vos clients une expérience enrichie et accompagnez-les vers une gestion énergétique plus responsable et optimisée")
-
+    # Disposition des graphiques sur la page : on choisit 2 colonnes
+    colonnes_contexte = st.columns([1,1])
+    # Première colonne
+    with colonnes_contexte[0] :
+        st.markdown(
+            """
+            <style>
+            .justified-text {
+                text-align: justify;
+            }
+            </style>
+            
+            <div class="justified-text">
+            En France, la maîtrise de la consommation énergétique est devenue un enjeu majeur, tant pour les ménages que pour les fournisseurs d’énergie. Dans un contexte de hausse des coûts et de transition écologique, vos clients cherchent à mieux comprendre et optimiser leurs usages pour réduire leur facture et leur impact environnemental.
+            <br><br>
+            Greentech vous propose une solution web innovante pour répondre à ces attentes. Notre interface comprend un <strong style="color:green;">dashboard interactif</strong style="color:green;"> qui permet à vos clients de visualiser comment se positionne leur <strong style="color:green;">consommation énergétique</strong style="color:green;"> en fonction de leur <strong style="color:green;">diagnostic DPE</strong style="color:green;">. Ces données sont également visibles géographiquement sur notre <strong style="color:green;">carte interactive</strong style="color:green;">.
+            <br><br>
+            En complément, notre <strong style="color:green;">outil de prédiction</strong style="color:green;"> basé sur des algorithmes avancés utilise les données récoltées sur toute la région Bretagne. Grâce à Greentech, offrez à vos clients une expérience enrichie et accompagnez-les vers une <strong style="color:green;">gestion énergétique plus responsable et optimisée</strong style="color:green;">.
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+    # Deuxième colonne
+    with colonnes_contexte[1] :
+        # Chargement de l'image
+        image_path = "C:/Users/habib/Desktop/Master_SISE/Projets/python_enedis/image_contexte.png"
+        # Affiche l'image
+        st.image(image_path)
+    
 
 
 

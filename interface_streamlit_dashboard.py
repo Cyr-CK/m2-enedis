@@ -94,14 +94,9 @@ if page == "Contexte":
         )
     # Deuxième colonne
     with colonnes_contexte[1] :
-        # Chargement de l'image
-        image_path = "C:/Users/habib/Desktop/Master_SISE/Projets/python_enedis/image_contexte.png"
-        # Affiche l'image
-        st.image(image_path)
+        # Chargement et affichage de l'image
+        st.image("image/image_contexte.png")
     
-
-
-
 # Page de data visualisation =================================================================================================================
     st.header("Tableau de bord")
     st.markdown("Cette page propose une visualisation interactive de différentes données d'intérêt sur la région Bretagne.\n\nDes filtres sont applicables, et il est possible de télécharger les graphiques une fois filtrés.")

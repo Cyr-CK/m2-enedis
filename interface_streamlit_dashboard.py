@@ -192,7 +192,7 @@ if page == "[contexte du projet]":
             y="Coût/m²",
             color='Etiquette_DPE',
             range_x=[1900,2024], 
-            title=f"Dépenses énergétiques par mêtre² (en €) en fonction de l'année de construction",
+            title=f"Dépenses énergétiques par m² (en €) en fonction de l'année de construction",
             labels={"Année_construction": "Année de Construction", "Coût/m²": "Coût/m² moyen"},
             )
 

@@ -63,7 +63,7 @@ with st.sidebar:
             default_index=1)
 
 #####################################################################################
-#########################"# Contenu de chaque page ################################## 
+########################## Contenu de chaque page ################################## 
 #####################################################################################
 
 
@@ -77,22 +77,8 @@ if page == "[contexte du projet]":
 
 # Page de data visualisation =================================================================================================================
     st.header("Tableau de bord")
-    st.write("xxxxxxxxxxxxxxxxxxx")
+    st.markdown("Cette page propose une visualisation interactive de différentes données d'intérêt sur la région Bretagne.\n\nDes filtres sont applicables, et il est possible de télécharger les graphiques une fois filtrés.")
     
-    # CSS pour ajuster la largeur du multiselect
-    st.markdown(
-    """
-    <style>
-    /* Ajuste la largeur des widgets Multiselect */
-    .stMultiSelect div[data-baseweb="select"] {
-        width: 100% !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-    )
-
-
     # Disposition des graphiques sur la page : on choisit 2 colonnes
     colonnes_dashboard = st.columns([1,1])
   

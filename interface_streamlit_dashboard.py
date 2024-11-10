@@ -75,8 +75,7 @@ if page == "[contexte du projet]":
 
 
 
-# Page de data visualisation ------------------------------------------------------------------------------------------
-elif page == "Tableau de bord":
+# Page de data visualisation =================================================================================================================
     st.header("Tableau de bord")
     st.write("xxxxxxxxxxxxxxxxxxx")
     
@@ -121,40 +120,40 @@ elif page == "Tableau de bord":
         departements = df_pivot.index.tolist()
         selected_departements = st.multiselect("Sélectionnez les départements à afficher", options=departements, default=departements)
 
-    # Vérifier que la sélection n'est pas vide pour éviter les erreurs
-    if selected_departements:
-        # Filtrer les données en fonction des départements sélectionnés
-        filtered_df_pivot = df_pivot.loc[selected_departements]      
+        # Vérifier que la sélection n'est pas vide pour éviter les erreurs
+        if selected_departements:
+            # Filtrer les données en fonction des départements sélectionnés
+            filtered_df_pivot = df_pivot.loc[selected_departements]      
+    
+            # Créer le graphique à barres empilées avec Plotly
+            fig_1 = px.bar(
+                filtered_df_pivot,
+                x=filtered_df_pivot.index,
+                y=filtered_df_pivot.columns,
+                title="Etiquettes DPE selon les départements de Bretagne",
+                labels={'value': 'Total des étiquettes', 'Département': 'Département', 'Etiquette_DPE': 'cliquer pour filtrer<br>les étiquettes DPE'},
+                height=400,
+                color_discrete_map=couleurs_DPE  # Appliquer les couleurs personnalisées
+            )
+    
+            # Afficher le graphique dans Streamlit (colonne 0)
+            colonnes_dashboard[0].plotly_chart(fig_1)
+    
+            # Convertir le graphique en image PNG
+            img_bytes_1 = fig_1.to_image(format="png")
+    
+            # Créer un bouton de téléchargement pour l'image PNG
+            st.download_button(
+                label="Télécharger - Etiquettes DPE / département",
+                data=img_bytes_1,
+                file_name="graphique_dpe.png",
+                mime="image/png"
+            )
+    
+        else:
+            st.write("Veuillez sélectionner au moins un département pour afficher le graphique.")
 
-        # Créer le graphique à barres empilées avec Plotly
-        fig_1 = px.bar(
-            filtered_df_pivot,
-            x=filtered_df_pivot.index,
-            y=filtered_df_pivot.columns,
-            title="Etiquettes DPE selon les départements de Bretagne",
-            labels={'value': 'Total des étiquettes', 'Département': 'Département', 'Etiquette_DPE': 'cliquer pour filtrer<br>les étiquettes DPE'},
-            height=400,
-            color_discrete_map=couleurs_DPE  # Appliquer les couleurs personnalisées
-        )
-
-        # Afficher le graphique dans Streamlit (colonne 0)
-        colonnes_dashboard[0].plotly_chart(fig_1)
-
-        # Convertir le graphique en image PNG
-        img_bytes_1 = fig_1.to_image(format="png")
-
-        # Créer un bouton de téléchargement pour l'image PNG
-        st.download_button(
-            label="Télécharger - Etiquettes DPE / département",
-            data=img_bytes_1,
-            file_name="graphique_dpe.png",
-            mime="image/png"
-        )
-
-    else:
-        st.write("Veuillez sélectionner au moins un département pour afficher le graphique.")
-
-    # Graphique n°2 -   -------------------------------------------------------------------------------------
+    # Graphique n°2 - scatter plot  -------------------------------------------------------------------------------------
 
     fig_2 = px.scatter(
         df,
@@ -179,11 +178,11 @@ elif page == "Tableau de bord":
     st.download_button(
         label="Télécharger - Coût/m² selon la surface",
         data=img_bytes_2,
-        file_name="graphique_dpe.png",
+        file_name="graphique_euros par m² selon surface.png",
         mime="image/png"
     )
 
-    # Graphique n°3 --------------------------------------------------------------------------------------------
+    # Graphique n°3 - line plot --------------------------------------------------------------------------------------------
     
     with colonnes_dashboard[1]:   
         # Widget de sélection multiple pour la classe DPE
@@ -204,7 +203,7 @@ elif page == "Tableau de bord":
         fig_3 = px.line(
             df_agg_3, 
             x="Année_construction", 
-            y="Coût/m²",
+            y="Coût/m² moyen",
             color='Etiquette_DPE',
             range_x=[1900,2024], 
             title=f"Dépenses énergétiques par mêtre² (en €) en fonction de l'année de construction",
@@ -216,41 +215,48 @@ elif page == "Tableau de bord":
             # Appliquer la couleur à chaque trace (ligne) basée sur l'étiquette DPE
             trace.line.color = couleurs_DPE[trace.name]
 
-        # Trier les légendes (étiquettes) par ordre alphabétique
-        fig_3.update_layout(
-            legend=dict(
-                traceorder="reversed",  # Utilisation de l'ordre d'origine des classes DPE
-                itemsizing="constant",  # Garder la taille des éléments constante
-                itemclick="toggleothers",  # Permet de désélectionner une légende sans affecter les autres
-                orientation="v",  # Disposition verticale
-                title="Etiquette DPE",  # Titre de la légende
-                x=1,  # Positionnement de la légende sur l'axe x
-                y=1,  # Positionnement de la légende sur l'axe y
-                xanchor="left",  # Ancrage horizontal de la légende
-                yanchor="top",  # Ancrage vertical de la légende
-            )
-        )
-
         # Afficher le graphique dans la deuxième colonne
         st.plotly_chart(fig_3)  
 
+        # Convertir le graphique en image PNG
+        img_bytes_3 = fig_3.to_image(format="png")
 
+        # Créer un bouton de téléchargement pour l'image PNG
+        st.download_button(
+            label="Télécharger - Dépense €/m² selon l'année de construction",
+            data=img_bytes_3,
+            file_name="graphique_Euros par m² selon l'année.png",
+            mime="image/png"
+        )
 
+    # Graphique n°4 - Treemap ------------------------------------------------------------------------------------------------
 
-
-
-
-    # Graphique n°4 ------------------------------------------------------------------------------------------------
+        # Calcul de la moyenne de 'Coût/m²' par 'Etiquette_DPE' et 'Département'
+        df_agg_4 = df.groupby(['Etiquette_DPE', 'Département']).agg({'Coût/m²': 'mean'}).reset_index()
+        # Ajouter une colonne de couleurs basée sur 'Etiquette_DPE'
+        df_agg_4['Couleur'] = df_agg_4['Etiquette_DPE'].map(couleurs_DPE)
+        # Créer un treemap avec Plotly Express
+        fig_4 = px.treemap(
+            df_agg_4, 
+            path=['Etiquette_DPE', 'Département'],  # Catégories principales et sous-catégories
+            values='Coût/m²',  # Taille des rectangles basée sur la moyenne du Coût/m²
+            title="Coût/m² moyen par Etiquette DPE et Département",
+            color='Etiquette_DPE',  # Utilisation de la colonne Etiquette_DPE pour la coloration
+            color_discrete_map=couleurs_DPE  # Appliquer le dictionnaire de couleurs personnalisé
+            )
+        # Afficher le graphique dans la deuxième colonne
+        st.plotly_chart(fig_4)
     
+        # Convertir le graphique en image PNG
+        img_bytes_4 = fig_4.to_image(format="png")
 
-    
-
-
-
-
-
-
-
+        # Créer un bouton de téléchargement pour l'image PNG
+        st.download_button(
+            label="Télécharger - Dépense €/m² moyenne selon DPE",
+            data=img_bytes_4,
+            file_name="graphique_Euros par m² selon DPE.png",
+            mime="image/png"
+        )
 
 
 # Page cartographie ===============================================================================================================

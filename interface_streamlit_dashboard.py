@@ -189,11 +189,11 @@ if page == "[contexte du projet]":
         fig_3 = px.line(
             df_agg_3, 
             x="Année_construction", 
-            y="Coût/m² moyen",
+            y="Coût/m²",
             color='Etiquette_DPE',
             range_x=[1900,2024], 
             title=f"Dépenses énergétiques par mêtre² (en €) en fonction de l'année de construction",
-            labels={"Année_construction": "Année de Construction", "Coût/m²": "Coût/m²"},
+            labels={"Année_construction": "Année de Construction", "Coût/m²": "Coût/m² moyen"},
             )
 
         # Appliquer les couleurs personnalisées des classes DPE sélectionnées
